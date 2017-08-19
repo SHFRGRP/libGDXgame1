@@ -13,9 +13,9 @@ import com.shfrgrp.games.game1.utils.*;
 public class MyGdxGame implements ApplicationListener
 {
 	OrthographicCamera camera;
-    Animation walkAnimation;
+    //Animation player.animation;
 	TextureRegion backgroundTexture;
-	TextureRegion rockTexture;
+	//TextureRegion r.texture;
 	Sound collisionSound;
 	BitmapFont font;
     SpriteBatch batch;
@@ -25,7 +25,7 @@ public class MyGdxGame implements ApplicationListener
 	//Rectangle player.position;
 	//Vector2 player.velocity;
 	
-	List<Rectangle> rockPositions;
+	List<Rock> rocks;
 
     @Override
     public void create()
@@ -36,12 +36,13 @@ public class MyGdxGame implements ApplicationListener
 		
 		// Load and position rocks
 		Texture texture2 = new Texture(Gdx.files.internal("rock.png"));
-		rockTexture = new TextureRegion(texture2, 25, 0, 250, 250);
-		rockPositions = new ArrayList<Rectangle>();
+		TextureRegion rockTexture = new TextureRegion(texture2, 25, 0, 250, 250);
+		rocks = new ArrayList<Rock>();
 		int x = 1800;
 		for (int i = 0; i < 60; i++)
 		{
-			rockPositions.add(new Rectangle(x, 0, 100, 100));
+            Rectangle r = new Rectangle(x, 0, 100, 100);
+			rocks.add(new Rock(rockTexture, r));
 			x += 600 + new Random().nextInt(600);
 		}
 		
@@ -50,7 +51,7 @@ public class MyGdxGame implements ApplicationListener
 		int FRAME_COLS = 6;
 		int FRAME_ROWS = 5;
         
-        walkAnimation = Utils.getAnimation(walkSheet, FRAME_COLS, FRAME_ROWS);
+        player.animation = Utils.getAnimation(walkSheet, FRAME_COLS, FRAME_ROWS);
 
 		font = new BitmapFont();
 		
@@ -76,11 +77,11 @@ public class MyGdxGame implements ApplicationListener
 			batch.draw(backgroundTexture, i * 2900, 0, 2900, 800);
 		
 		// Draw rocks
-		for (Rectangle r : rockPositions)
-			batch.draw(rockTexture, r.x, r.y, r.width, r.height);
+		for (Rock r : rocks)
+			batch.draw(r.texture, r.position.x, r.position.y, r.position.width, r.position.height);
 			
 		// Draw man
-        batch.draw(walkAnimation.getKeyFrame(time, true), player.position.x, player.position.y, player.position.width, player.position.height);
+        batch.draw(player.animation.getKeyFrame(time, true), player.position.x, player.position.y, player.position.width, player.position.height);
 		
 		font.draw(batch, (int) (player.position.x / 70) + "m", camera.position.x - 10, 30);
         batch.end();
@@ -104,9 +105,9 @@ public class MyGdxGame implements ApplicationListener
 		camera.translate((player.velocity.x - camera.viewportWidth / 80) * Gdx.graphics.getDeltaTime(), 0);
 		
 		// Detect collision
-		for (Rectangle r : rockPositions)
+		for (Rock r : rocks)
 		{
-			if (r.overlaps(player.position) && r.getCenter(new Vector2()).dst(player.position.getCenter(new Vector2())) < 120)
+			if (r.position.overlaps(player.position) && r.position.getCenter(new Vector2()).dst(player.position.getCenter(new Vector2())) < 120)
 			{
 				collisionSound.play();
 				resetGame();

@@ -1,11 +1,10 @@
 package com.shfrgrp.games.game1.objects;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
 
-public class Player
+public class Player extends GameObject
 {
-	public Vector2 velocity;
-	public Rectangle position;
 	
 	public void Player(){
 		
